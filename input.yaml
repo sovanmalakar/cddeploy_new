@@ -1,0 +1,6 @@
+version: 1.0
+
+tests:
+  - test1:
+    ARGS: ../example_tests/example.xml
+    RESOURCE: /tmp/resource.yaml

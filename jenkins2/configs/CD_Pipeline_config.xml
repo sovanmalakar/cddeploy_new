@@ -1,0 +1,56 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.32">
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.67">
+    <script>node {
+
+   stage(&apos;Build Download&apos;) { // for display purposes
+     echo &apos;Downloading Build&apos;
+   }
+   stage(&apos;Test Execution&apos;) {
+     parallel  (
+            &quot;System Test 1&quot; : {
+                build job : &apos;Test_Execution&apos;
+            },
+            &quot;System Test 2&quot; : {
+                build job : &apos;Test_Execution&apos;
+            }
+        )
+   }
+
+}
+
+def transformIntoStep() {
+	// We need to wrap what we return in a Groovy closure, or else it&apos;s invoked
+	// when this method is called, not when we pass it to parallel.
+	// To do this, you need to wrap the code below in { }, and either return
+	// that explicitly, or use { -&gt; } syntax.
+	monitoring_job = &apos;Test_Execution&apos;
+	return {
+		node {
+			build job: monitoring_job
+		}
+	}
+}
+
+def kick_off_tests(){
+	String[] testArr = [ &quot;System Test 1&quot;, &quot;System Test 2&quot; ]
+    def stepsForParallel = [:]
+    echo &quot;Executing Tests: ${testArr}&quot;
+    for (it in testArr) {
+        def stepName = &quot;running ${it}&quot;
+        stepsForParallel[stepName] = { -&gt;
+            transformIntoStep()
+        }
+    }
+    echo &quot;${stepsForParallel}&quot;
+    return stepsForParallel
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

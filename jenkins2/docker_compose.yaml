@@ -1,0 +1,22 @@
+version: '3.6'
+services:
+  jenkin:
+    image: jenkin-master
+    ports:
+     - "8080:8080"
+     - "50000:50000"
+    secrets:
+      - secret_api_key
+    volumes:
+      - type: bind
+        source: /localdisk/jenkins_scripts1
+        target: /var/jenkins_home
+      - type: bind
+        source: /localdisk/builds
+        target: /var/builds
+      - type: bind
+        source: /ws/mchidraw-bgl/qa/ci-cd/shipable-pipeline/jenkins2/jobs_scripts
+        target: /var/scripts
+secrets:
+  secret_api_key:
+    file: /localdisk/api.key

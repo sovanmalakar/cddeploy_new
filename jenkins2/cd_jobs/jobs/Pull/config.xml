@@ -1,0 +1,47 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.32">
+  <actions/>
+  <description>testing jobs</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.plugins.jira.JiraProjectProperty plugin="jira@3.0.7"/>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>CUSTOMER_REPO</name>
+          <description></description>
+          <defaultValue></defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>API_KEY</name>
+          <description>Build API KEY</description>
+          <defaultValue>AKCp5ccbGWYVQk7s9ddWyrSiNRwgGSSfXtp4fKfxW5SA8uC6uRTgr48J1NborsihKffMFyaNN</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>DESTINATION_PATH</name>
+          <description>Destination path where build is to be downloaded</description>
+          <defaultValue>/var/builds</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>RELEASE</name>
+          <description>Name of specific release for which build is to be downloaded</description>
+          <defaultValue>21.12</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@2.67">
+    <scm class="hudson.plugins.filesystem_scm.FSSCM" plugin="filesystem_scm@2.1">
+      <path>/var/scripts</path>
+      <clearWorkspace>false</clearWorkspace>
+    </scm>
+    <scriptPath>pull.groovy</scriptPath>
+    <lightweight>true</lightweight>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

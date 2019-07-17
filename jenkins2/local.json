@@ -1,0 +1,8 @@
+[
+  {
+      "targets": ["127.0.0.1:9091"],
+       "labels": {
+                   "job": "sysEngine"
+       }
+  }
+]

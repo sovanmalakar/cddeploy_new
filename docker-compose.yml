@@ -1,0 +1,114 @@
+version: '3.2'
+
+# Set the following enviornment settings
+# PROMOTHEUS_CONF_FILE=<prom config yml file> 
+# PROMOTHEUS_DATA_DIR=<prom data directory>
+# eg.
+# PROMOTHEUS_CONF_FILE=/ws/mchidraw-bgl/qa/ci-cd/shipable-pipeline/jenkins2/prometheus.yml PROMOTHEUS_DATA_DIR=/data/promotheus_data 
+#docker stack deploy -c docker-compose.yml 
+
+services:
+  influxdb:
+    environment: 
+      INFLUXDB_DB: metrics
+    image: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - type: bind
+        source: /data/influxdb_data
+        target: /var/lib/influxdb
+  grafana:
+    image: grafana/grafana
+    container_name: grafana_1
+    links:
+      - influxdb
+    ports:
+      - "3000:3000"
+    volumes:
+      - type: bind
+        source: /data/grafana_data
+        target: /var/lib/grafana
+  jenkin:
+    image: jenkin-master:latest
+    ports:
+     - "8080:8080"
+     - "50000:50000"
+    secrets:
+      - secret_api_key
+    links:
+      - prom_pushgw
+    volumes:
+      - type: bind
+        source: /localdisk/jenkins_scripts1
+        target: /var/jenkins_home
+      - type: bind
+        source: /localdisk/builds
+        target: /var/builds
+      - type: bind
+        source: /home/sovanmalakar/Downloads/cddeploy-dev-poc_code/cddeploy-dev-poc_code/jenkins2/jobs_scripts
+        target: /var/scripts
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+      - type: bind
+        source: /bin/docker
+        target: /usr/bin/docker
+
+  prom_server:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - type: bind
+        source: /home/sovanmalakar/Downloads/cddeploy-dev-poc_code/cddeploy-dev-poc_code/jenkins2/prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+      - type: bind
+        source: /data/promotheus_data 
+        target: /prometheus
+  prom_pushgw:
+     image: prom/pushgateway:latest
+     ports: 
+       - "9091:9091"
+  
+  vault:
+    build:
+      context: ./vault
+      dockerfile: Dockerfile
+    ports:
+      - 8200:8200
+    volumes:
+      - ./vault/config:/vault/config
+      - ./vault/policies:/vault/policies
+      - ./vault/data:/vault/data
+      - ./vault/logs:/vault/logs
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+    command: server -config=/vault/config/vault-config.json
+    cap_add:
+      - IPC_LOCK
+      
+  consul:
+    build:
+      context: ./consul
+      dockerfile: Dockerfile
+    ports:
+      - 8500:8500
+    command: agent -server -bind 0.0.0.0 -client 0.0.0.0 -bootstrap-expect 1 -config-file=/consul/config/config.json
+    volumes:
+      - ./consul/config/consul-config.json:/consul/config/config.json
+      - ./consul/data:/consul/data
+      
+  terraform:
+    build:
+      context: ./terraform
+      dockerfile: Dockerfile
+    ports:
+      - 8900:8900
+    
+secrets:
+    secret_api_key:
+      file: /localdisk/api.key
+      
+     
+  

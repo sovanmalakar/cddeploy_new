@@ -1,0 +1,35 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.32">
+  <actions/>
+  <description>&#xd;
+This pipeline will deploy setup, build and will execute the test&#xd;
+</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.67">
+    <script>node {
+   currentBuild.description = &quot;Click &lt;a href=&apos;http://yourlink&apos;&gt;here&lt;/a&gt;&quot;
+   stage(&apos;Setup Deployment&apos;) { // for display purposes
+     echo &apos;Deploying Setup&apos;
+   }
+   stage(&apos;Setup Validation&apos;) {
+     echo &apos;Validating Setup&apos;
+   }
+   stage(&apos;Build Deployment&apos;) {
+      echo &apos;Deploying Build&apos;
+   }
+   stage(&apos;Test Validation&apos;) {
+      echo &apos;Validating Test&apos;
+   }
+   stage(&apos;Result Validation&apos;) {
+      echo &apos;Validating Result&apos;
+   }
+   stage(&apos;Envirornment Reset&apos;) {
+      echo &apos;Resetting Environment&apos;
+   }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>

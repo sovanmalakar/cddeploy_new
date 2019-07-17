@@ -1,0 +1,22 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.32">
+  <actions/>
+  <description>deploy setup</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.67">
+    <script>node {
+
+   stage(&apos;deploy setup&apos;) { // for display purposes
+        echo &quot;deploying setup&quot;
+   }
+   stage(&apos;validate setup&apos;)
+   {
+       echo &quot;validating setup&quot;
+   }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
